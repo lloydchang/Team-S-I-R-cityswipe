@@ -57,25 +57,30 @@ export default function Hero() {
         setResponses(newResponses);
     };
 
-    const handleFinish = async () => {
-        try {
-            const response = await fetch('/api/generatedestinations', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ responses }),
-            });
+const handleFinish = async () => {
+        const prompt = Based on the following travel preferences, generate a list of exactly 50 travel destinations formatted as 'City, Country, [Compatibility Percentage]'. Make sure the compatibility percentage is a number between 0 and 100. Each entry should be on a new line. Questions are answered in order of listing as follows: traveler type, mountain or beach, history or adventure, local cuisine or not, hotel or rental, budget importance, solo or companions, planning or spontaneity, outdoor or no, preferred transportation. Responses in order: \n\n${responses.join('\n')};
 
-            if (!response.ok) {
-                throw new Error('Failed to fetch destinations');
-            }
+        const conversationHistory = [
+            { role: "user", content: prompt },
+        ];
 
-            const data = await response.json();
-            setDestinations(data.destinations);
-        } catch (error) {
-            console.error('Error fetching destinations:', error);
+        const { newMessage } = await streamConversation(conversationHistory);
+
+        let textContent = "";
+
+        for await (const delta of readStreamableValue(newMessage)) {
+            textContent = ${textContent}${delta};
         }
+
+        const generatedDestinations = textContent.split('\n').map(destination => {
+            const [location, score] = destination.split('[');
+            return {
+                location: location.trim(),
+                compatibilityScore: score ? parseFloat(score.replace(']', '').trim()) : null,
+            };
+        });
+
+        setDestinations(generatedDestinations);
     };
 
     return (
