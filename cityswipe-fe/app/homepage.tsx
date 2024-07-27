@@ -6,6 +6,8 @@ import React, { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import quizQuestions from "./quiz-questions/questions";
 import { House } from "lucide-react";
+import { streamConversation, Message } from "./actions";
+import { readStreamableValue } from "ai/rsc";
 
 export default function Hero() {
     const { isStarted, setIsStarted } = useQuiz();
@@ -13,6 +15,10 @@ export default function Hero() {
     const [responses, setResponses] = useState<string[]>([]);
     const [destinations, setDestinations] = useState<any[]>([]);
     const questionKeys = Object.keys(quizQuestions);
+
+    // gemini consts
+    const [conversation, setConversation] = useState<Message[]>([]);
+    const [input, setInput] = useState<string>("");
 
     const handleKeyDown = (event: KeyboardEvent) => {
         if (event.key === 'ArrowDown') {
@@ -74,11 +80,53 @@ export default function Hero() {
 
     return (
         <>        
-        <div className="flex flex-col w-full place-items-center gap-6">
-            {!isStarted ? (
-                <>
-                    <h1 className="text-5xl cursor-pointer select-none">Match with your destination</h1>
-                    <Button className="select-none" onClick={() => setIsStarted(true)}>Get Started</Button>
+    <div className="flex flex-col w-full place-items-center gap-6">
+        {!isStarted ? (
+            <>
+                <h1 className="text-5xl cursor-pointer select-none">Match with your destination</h1>
+                <Button className="select-none" onClick={() => setIsStarted(true)}>Get Started</Button>
+
+                {/* debug Gemini server action */}
+                {/* <div>
+                    <div>
+                        {conversation.map((message, index) => (
+                            <div key={index}>
+                                {message.role}: {message.content}
+                            </div>
+                        ))}
+                    </div>
+
+                    <div>
+                        <input
+                            type="text"
+                            value={input}
+                            onChange={(event) => {
+                                setInput(event.target.value);
+                            }}
+                        />
+                        <button
+                            onClick={async () => {
+                                const { messages, newMessage } = await streamConversation([
+                                    ...conversation,
+                                    { role: "user", content: input },
+                                ]);
+
+                                let textContent = "";
+
+                                for await (const delta of readStreamableValue(newMessage)) {
+                                    textContent = `${textContent}${delta}`;
+
+                                    setConversation([
+                                        ...messages,
+                                        { role: "assistant", content: textContent },
+                                    ]);
+                                }
+                            }}
+                        >
+                            Send Message
+                        </button>
+                    </div>
+                </div> */}
                 </>
             ) : (
                 <>
