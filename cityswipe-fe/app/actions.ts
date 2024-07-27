@@ -34,11 +34,11 @@ export async function streamConversation(history: Message[]) {
   };
 }
 
-export async function streamFlirtatiousConversation(city: string, history: Message[]) {
+export async function streamFlirtatiousConversation(city: string, country: string, history: Message[]) {
   const stream = createStreamableValue();
   const model = google("models/gemini-1.5-pro-latest");
 
-  const prompt = `You are ${city}, a charming city in a "dating app" for vacation spots. Be creative, informative, and add romantic/flirtatious jokes and emojis (safe for work) in your responses. Here's the conversation so far:\n\n${history.map(msg => `${msg.role === "user" ? "User" : "Assistant"}: ${msg.content}`).join('\n')}`;
+  const prompt = `You are ${city} in ${country} a charming city in a "dating app" for vacation spots. Be creative, informative about your city and it's offering, and add romantic/flirtatious jokes and emojis (safe for work) in your responses. Here's the conversation so far:\n\n${history.map(msg => `${msg.role === "user" ? "User" : "Assistant"}: ${msg.content}`).join('\n')}`;
 
   (async () => {
     const { textStream } = await streamText({
