@@ -11,6 +11,7 @@ export default function Hero() {
     const { isStarted, setIsStarted } = useQuiz();
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [responses, setResponses] = useState<string[]>([]);
+    const [destinations, setDestinations] = useState<any[]>([]);
     const questionKeys = Object.keys(quizQuestions);
 
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -50,6 +51,27 @@ export default function Hero() {
         setResponses(newResponses);
     };
 
+    const handleFinish = async () => {
+        try {
+            const response = await fetch('/api/generatedestinations', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ responses }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch destinations');
+            }
+
+            const data = await response.json();
+            setDestinations(data.destinations);
+        } catch (error) {
+            console.error('Error fetching destinations:', error);
+        }
+    };
+
     return (
         <>        
         <div className="flex flex-col w-full place-items-center gap-6">
@@ -86,25 +108,25 @@ export default function Hero() {
                         <House className="absolute bottom-10 right-10 w-5 h-5" />
                     </button>
 
-                    {/* debugging stuff */}
-                    {/* <div className="w-full mt-4">
-                        <h2 className="text-xl">Saved Responses:</h2>
-                        <ul>
-                            {responses.map((response, index) => (
-                                <li key={index}>{`Question ${index + 1}: ${response}`}</li>
-                            ))}
-                        </ul>
-                    </div> */}
-                    {/* debugging stuff end */}
+                    {isStarted && currentQuestionIndex === questionKeys.length - 1 &&
+                    <>
+                        <Button className="select-none w-max flex place-self-center" onClick={handleFinish}>Find Your Match!</Button>
+                    </>
+                    }
                 </>
             )}
         </div>
 
-        {isStarted && currentQuestionIndex === questionKeys.length - 1 &&
-        <>
-            <Button className="select-none w-max flex place-self-center" onClick={() => setIsStarted(false)}>Find Your Match!</Button>
-        </>
-        }
+        {destinations.length > 0 && (
+            <div className="mt-6">
+                <h2 className="text-2xl">Generated Destinations:</h2>
+                <ul>
+                    {destinations.map((destination, index) => (
+                        <li key={index}>{`${destination.location} [${destination.compatibilityScore}]`}</li>
+                    ))}
+                </ul>
+            </div>
+        )}
         </>
     );
 }
