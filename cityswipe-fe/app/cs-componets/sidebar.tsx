@@ -42,11 +42,13 @@ export default function Sidebar() {
     const handleChatting = () => {
         setIsChatting?.(true);
         setIsMatching?.(false);
+        router.push('/explore');
     }
 
     const handleMatching = () => {
         setIsChatting?.(false);
         setIsMatching?.(true);
+        router.push('/match');
     }
  
     const reload = () => {
@@ -79,8 +81,8 @@ export default function Sidebar() {
                          <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger>
-                                    <div className="w-max h-max rounded-full p-2 cursor-pointer hover:scale-125">
-                                        <MessageCircleMore size={15} onClick={() => handleChatting()} className="text-white"/>
+                                    <div className="w-max h-max rounded-full p-2 cursor-pointer hover:scale-125" onClick={handleChatting}>
+                                        <MessageCircleMore size={15} className="text-white"/>
                                     </div>
                                 </TooltipTrigger>
                                 <TooltipContent>
@@ -93,8 +95,8 @@ export default function Sidebar() {
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger>
-                                    <div className="w-max h-max rounded-full p-2 cursor-pointer hover:scale-125">
-                                    <MessageCircleHeart size={15} onClick={() => handleMatching()} className="text-white"/>
+                                    <div className="w-max h-max rounded-full p-2 cursor-pointer hover:scale-125" onClick={handleMatching}>
+                                    <MessageCircleHeart size={15} className="text-white"/>
                                     </div>
                                 </TooltipTrigger>
                                 <TooltipContent>

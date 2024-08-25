@@ -13,121 +13,137 @@ import Link from "next/link";
 import { useFormState, useFormStatus } from "react-dom";
 import { submitFormResponse } from "../actions";
 import { useCitySwipe } from '../citySwipeContext';
+import { useRouter } from 'next/navigation';
 
-  export default function Header() {
-    const { isStarted } = useCitySwipe();
-    const components: { title: string; href: string; description: string }[] = [
-        {
-          title: "Alert Dialog",
-          href: "/docs/primitives/alert-dialog",
-          description:
-            "A modal dialog that interrupts the user with important content and expects a response.",
-        },
-        {
-          title: "Hover Card",
-          href: "/docs/primitives/hover-card",
-          description:
-            "For sighted users to preview content available behind a link.",
-        },
-        {
-          title: "Progress",
-          href: "/docs/primitives/progress",
-          description:
-            "Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.",
-        },
-        {
-          title: "Scroll-area",
-          href: "/docs/primitives/scroll-area",
-          description: "Visually or semantically separates content.",
-        },
-        {
-          title: "Tabs",
-          href: "/docs/primitives/tabs",
-          description:
-            "A set of layered sections of content—known as tab panels—that are displayed one at a time.",
-        },
-        {
-          title: "Tooltip",
-          href: "/docs/primitives/tooltip",
-          description:
-            "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
-        },
-      ]
+export default function Header() {
+  const { isStarted } = useCitySwipe();
+  const components: { title: string; href: string; description: string }[] = [
+    {
+      title: "Alert Dialog",
+      href: "/docs/primitives/alert-dialog",
+      description:
+        "A modal dialog that interrupts the user with important content and expects a response.",
+    },
+    {
+      title: "Hover Card",
+      href: "/docs/primitives/hover-card",
+      description:
+        "For sighted users to preview content available behind a link.",
+    },
+    {
+      title: "Progress",
+      href: "/docs/primitives/progress",
+      description:
+        "Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.",
+    },
+    {
+      title: "Scroll-area",
+      href: "/docs/primitives/scroll-area",
+      description: "Visually or semantically separates content.",
+    },
+    {
+      title: "Tabs",
+      href: "/docs/primitives/tabs",
+      description:
+        "A set of layered sections of content—known as tab panels—that are displayed one at a time.",
+    },
+    {
+      title: "Tooltip",
+      href: "/docs/primitives/tooltip",
+      description:
+        "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
+    },
+  ];
+
+  const router = useRouter();
+
+  const navigateToAbout = () => {
+    router.push('/about');
+  };
+
+  const SubmitButton = () => {
+    const status = useFormStatus();
+    
+    if (status.pending != true) {
+      return (
+        <button className="bg-gradient-to-t from-cyan-500 to-green-400 text-white hover:opacity-90 font-bold py-2 px-4 rounded" type="submit">Join The Wait list</button>
+      )
+    }
+
+    if (status.pending === true) {
+      return (
+        <button className="bg-gradient-to-t from-cyan-500 to-green-400 text-white hover:opacity-50 font-bold py-2 px-4 rounded text-gray-600 animate-pulse" disabled>Submitting..</button>
+      )
+    }
+  }
 
   
-    const SubmitButton = () => {
-      const status = useFormStatus();
+  type FormState = {
+    message: string;
+  };
+
+  const formAction = async (prevState: FormState, formData: FormData): Promise<FormState> => {
+    await submitFormResponse(formData, formState);
+    return { message: 'Submission successful!' };
+  };
+
+  const [formState, action] = useFormState(formAction, {
+    message: '',
+  });
+
+  const reload = () => {
+    window.location.reload();
+  }
+
+  return (
+    <>    
+
+    <div className="flex absolute z-10 top-10 px-8 w-full place-items-center justify-between">
       
-      if (status.pending != true) {
-        return (
-          <button className="bg-gradient-to-t from-cyan-500 to-green-400 text-white hover:opacity-90 font-bold py-2 px-4 rounded" type="submit">Join The Wait list</button>
-        )
-      }
-  
-      if (status.pending === true) {
-        return (
-          <button className="bg-gradient-to-t from-cyan-500 to-green-400 text-white hover:opacity-50 font-bold py-2 px-4 rounded text-gray-600 animate-pulse" disabled>Submitting..</button>
-        )
-      }
-    }
+      <>
+        <Link onClick={reload} href="/">
+            <h1 className="select-none">cityswipe</h1>
+        </Link>
 
-    type FormState = {
-      message: string;
-    };
+        <div className="flex items-center gap-4">
+          <button onClick={navigateToAbout} className="font-bold underline">
+            About Us
+          </button>
 
-    const formAction = async (prevState: FormState, formData: FormData): Promise<FormState> => {
-      await submitFormResponse(formData, formState);
-      return { message: 'Submission successful!' };
-    };
+          <Dialog>
+            <DialogTrigger>
+              <h1 className="select-none font-bold underline">Join Waitlist</h1>
+            </DialogTrigger>
+            <DialogContent className="scale-[80%] sm:scale-100">
+              <DialogHeader>
+                <DialogTitle>Join our wait list for early access!</DialogTitle>
+                <DialogDescription>
+                  <p>When we launch you will receive first access to our full beta!</p>
 
-    const [formState, action] = useFormState(formAction, {
-      message: '',
-    });
+                  <form className="flex flex-col gap-6 my-5" action={action}>
+                    <p className="flex place-self-center text-green-500">{formState.message}</p>
 
-    const reload = () => {
-      window.location.reload();
-    }
+                    <Input type="text" name="Name" placeholder="Name" className="w-full" />
+                    <Input type="email" name="Email" placeholder="Email address" className="w-full" />
+                    <SubmitButton />
+                  </form>
 
-    return (
-        <>    
+                  <p>Thank you for the support!</p>
 
-        <div className="flex absolute z-10 top-10 px-8 w-full place-items-center justify-between">
-        
-          <>
-            <Link onClick={reload} href="/">
-                <h1 className="select-none">cityswipe</h1>
-            </Link>
+                  <h1 className="select-none font-bold absolute bottom-0 right-0 m-3">cityswipe</h1>
 
-            <Dialog>
-              <DialogTrigger><h1 className="select-none font-bold underline">Join Waitlist</h1>
-              </DialogTrigger>
-              <DialogContent className="scale-[80%] sm:scale-100">
-                <DialogHeader>
-                  <DialogTitle>Join our wait list for early access!</DialogTitle>
-                  <DialogDescription>
-                    
-
-                    <p>When we launch you will receive first access to our full beta!</p>
-
-                    <form className="flex flex-col gap-6 my-5" action={action}>
-                      
-                      <p className="flex place-self-center text-green-500">{formState.message}</p>
-
-                      <Input type="text" name="Name" placeholder="Name" className="w-full" />
-                      <Input type="email" name="Email" placeholder="Email address" className="w-full" />
-                      <SubmitButton />
-                    </form>
-
-                    <p>Thank you for the support!</p>
-
-                    <h1 className="select-none font-bold absolute bottom-0 right-0 m-3">cityswipe</h1>
-
-                  </DialogDescription>
-                </DialogHeader>
-              </DialogContent>
-            </Dialog>
-            
-              {/* <NavigationMenu>
+                </DialogDescription>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </>
+    
+    </div>  
+      
+    </>
+  )
+             {/* <NavigationMenu>
               <NavigationMenuList>
                   <NavigationMenuItem>
                   <NavigationMenuTrigger>Getting started</NavigationMenuTrigger>
@@ -186,37 +202,30 @@ import { useCitySwipe } from '../citySwipeContext';
                   </Link>
                   </NavigationMenuItem>
               </NavigationMenuList>
-              </NavigationMenu> */}
-            </>
-        
-        </div>  
-          
-        </>
-    )
+              </NavigationMenu> */
+      // const ListItem = React.forwardRef<
+      //   React.ElementRef<"a">,
+      //   React.ComponentPropsWithoutRef<"a">
+      // >(({ className, title, children, ...props }, ref) => {
+      //   return (
+      //     <li>
+      //       <NavigationMenuLink asChild>
+      //         <a
+      //           ref={ref}
+      //           className={cn(
+      //             "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+      //             className
+      //           )}
+      //           {...props}
+      //         >
+      //           <div className="text-sm font-medium leading-none">{title}</div>
+      //           <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+      //             {children}
+      //           </p>
+      //         </a>
+      //       </NavigationMenuLink>
+      //     </li>
+      //   )
+      // })
+      // ListItem.displayName = "ListItem"
 }
-
-// const ListItem = React.forwardRef<
-//   React.ElementRef<"a">,
-//   React.ComponentPropsWithoutRef<"a">
-// >(({ className, title, children, ...props }, ref) => {
-//   return (
-//     <li>
-//       <NavigationMenuLink asChild>
-//         <a
-//           ref={ref}
-//           className={cn(
-//             "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-//             className
-//           )}
-//           {...props}
-//         >
-//           <div className="text-sm font-medium leading-none">{title}</div>
-//           <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-//             {children}
-//           </p>
-//         </a>
-//       </NavigationMenuLink>
-//     </li>
-//   )
-// })
-// ListItem.displayName = "ListItem"

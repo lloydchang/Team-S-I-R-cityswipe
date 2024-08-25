@@ -89,6 +89,12 @@ export default function Hero() {
         setResponses(newResponses);
     };
 
+    const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') {
+            handleNext();
+        }
+    };
+
     // animations    
 
 
@@ -222,9 +228,6 @@ export default function Hero() {
             return sanText; 
       }
 
-      
-
-
     return (
         <>
         
@@ -262,77 +265,11 @@ export default function Hero() {
                     </h1>
 
                     
-{/* 
-                    <Dialog>
-                        <DialogTrigger>          
-                    <span className=" text-white py-2 px-4 rounded-md select-none bg-gradient-to-t from-cyan-500 to-green-400 flex place-items-center gap-2">
-                        Get Started 
-                        {updateHeart == false && <span><Heart className="w-2 h-2  "/></span>}
-                        {updateHeart == true && <span><Heart className="w-2 h-2 text-red-300 animate-pulse"/></span>}
-                    </span>
-                        </DialogTrigger>
-                        <DialogContent className="scale-[80%] sm:scale-100">
-                            <DialogHeader>
-                            <DialogTitle>Join our wait list for early access!</DialogTitle>
-                            <DialogDescription>
-                                
-                                <p>When we launch you will receive first access to our full beta!</p>
-
-
-                                <form className="flex flex-col gap-6 my-5" action={action}>
-                                
-                                <p className="flex place-self-center text-green-500">{formState.message}</p>
-
-                                <Input type="text" name="Name" placeholder="Name" className="w-full" />
-                                <Input type="email" name="Email" placeholder="Email address" className="w-full" />
-                                <SubmitButton />
-                                </form>
-
-                                <p>Thank you for the support!</p>
-                                <h1 className="select-none font-bold absolute bottom-0 right-0 m-3">cityswipe</h1>
-                            </DialogDescription>
-                            </DialogHeader>
-                        </DialogContent>
-                    </Dialog>
-           */}
-
-                    {/* QUIZ BUTTON */}
-                
                     <Button className="select-none bg-gradient-to-t from-cyan-500 to-green-400 flex place-items-center gap-2" onClick={() => setIsStarted(true)}>
                         Demo
                         {updateHeart == false && <span><Heart className="w-2 h-2  "/></span>}
                         {updateHeart == true && <span><Heart className="w-2 h-2 text-red-300 animate-pulse"/></span>}
                     </Button>
-
-                    <Dialog>
-                        <DialogTrigger><h1 className="select-none font-bold underline">Join Waitlist</h1>
-                        </DialogTrigger>
-                        <DialogContent className="scale-[80%] sm:scale-100">
-                            <DialogHeader>
-                            <DialogTitle>Join our wait list for early access!</DialogTitle>
-                            <DialogDescription>
-                                
-
-                                <p>When we launch you will receive first access to our full beta!</p>
-
-                                <form className="flex flex-col gap-6 my-5" action={action}>
-                                
-                                <p className="flex place-self-center text-green-500">{formState.message}</p>
-
-                                <Input type="text" name="Name" placeholder="Name" className="w-full" />
-                                <Input type="email" name="Email" placeholder="Email address" className="w-full" />
-                                <SubmitButton />
-                                </form>
-
-                                <p>Thank you for the support!</p>
-
-                                <h1 className="select-none font-bold absolute bottom-0 right-0 m-3">cityswipe</h1>
-
-                            </DialogDescription>
-                            </DialogHeader>
-                        </DialogContent>
-                    </Dialog>
-
 
                 </>
             ) : (
@@ -352,6 +289,7 @@ export default function Hero() {
                             autoComplete="off"
                             value={sanitizeText(responses[currentQuestionIndex] || '')}
                             onChange={handleInputChange}
+                            onKeyPress={handleKeyPress} 
                         />
                         {responses[currentQuestionIndex]?.length > 1 && 
                             <Button className="bg-gradient-to-t from-cyan-500 to-green-400  select-none" onClick={handleNext}>Next</Button>
